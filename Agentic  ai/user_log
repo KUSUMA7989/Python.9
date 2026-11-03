@@ -1,0 +1,221 @@
+from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+# Demo login credentials
+inbuilt_user_name = "admin"
+inbuilt_user_password = "admin123"
+
+# HTML + CSS in one page
+HTML_PAGE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #101a35, #315b91);
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 35px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 18px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #e7efff;
+            color: #315bba;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #182746;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #263653;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            margin-bottom: 20px;
+            border: 1px solid #d4dbea;
+            border-radius: 9px;
+            outline: none;
+            font-size: 15px;
+            background: #f9faff;
+        }
+
+        input:focus {
+            border-color: #3867d6;
+            box-shadow: 0 0 0 3px rgba(56, 103, 214, 0.12);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            background: linear-gradient(90deg, #315bba, #547fe3);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(49, 91, 186, 0.3);
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #176b3a;
+            background: #e5f8ec;
+        }
+
+        .error {
+            color: #a3212b;
+            background: #fde9eb;
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+
+        @media (max-width: 450px) {
+            .login-container {
+                padding: 32px 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+
+        <div class="icon">&#128274;</div>
+
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Please login to your account</p>
+
+        <form method="POST" action="/">
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">Login</button>
+        </form>
+
+        {% if message %}
+            <div class="message {{ status }}" role="status">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        <div class="footer">
+            &copy; 2026 Login System. All rights reserved.
+        </div>
+
+    </div>
+</body>
+</html>
+"""
+
+
+@app.route("/", methods=["GET", "POST"])
+def login():
+    message = ""
+    status = ""
+
+    if request.method == "POST":
+        user_name = request.form.get("username", "")
+        user_password = request.form.get("password", "")
+
+        if (
+            user_name == inbuilt_user_name
+            and user_password == inbuilt_user_password
+        ):
+            message = "Login successful! Welcome, admin."
+            status = "success"
+        else:
+            message = "Invalid username or password."
+            status = "error"
+
+    return render_template_string(
+        HTML_PAGE,
+        message=message,
+        status=status
+    )
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
